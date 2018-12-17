@@ -15,17 +15,17 @@ var defalutInt = "0"
 var defalutStr = ""
 var defalutJson = "[]"
 
-func getValue(value, typeStr string) (bool, string) {
+func getValue(value, typeStr string) string {
 	if len(value) > 0 {
-		return false, value
+		return value
 	}
 	if typeStr == "s" || typeStr == "string" {
-		return true, defalutStr
+		return defalutStr
 	}
 	if typeStr == "i" || typeStr == "int" {
-		return true, defalutInt
+		return defalutInt
 	}
-	return true, defalutJson
+	return defalutJson
 }
 
 func getEnumConstF(path, rootPath string) *strings.Replacer {
@@ -138,8 +138,9 @@ func readOtherF(r *strings.Replacer, path, rootPath string) {
 						keyNames_orig := sheet.Rows[1].Cells
 						var keyNames = make([]string, 0)
 						for _, v := range keyNames_orig {
-							if len(v) > 0 {
-								keyNames = append(keyNames, v)
+							vstr := v.String()
+							if len(vstr) > 0 {
+								keyNames = append(keyNames, vstr)
 							} else {
 								break
 							}
@@ -152,7 +153,7 @@ func readOtherF(r *strings.Replacer, path, rootPath string) {
 							oneLine := make([]string, len(row.Cells))
 							for i, cell := range row.Cells {
 								if i < keyNameLen {
-									key := keyNames[i].String()
+									key := keyNames[i]
 									ty := types[i].String()
 									value := getValue(cell.String(), ty)
 									if ty == "s" || ty == "string" {
