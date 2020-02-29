@@ -15,6 +15,15 @@ var defalutInt = "0"
 var defalutStr = ""
 var defalutJson = "[]"
 
+func isAllCellEmpty([]xxx cells) {
+	for _,v := range(cells){
+		if len(v.String()) > 0{
+			return false
+		}
+	}
+	return true
+}
+
 func getValue(value, typeStr string) string {
 	if len(value) > 0 {
 		return value
@@ -151,6 +160,9 @@ func readOtherF(r *strings.Replacer, path, rootPath string) {
 						lines := make([]string, 0)
 						for _, row := range data {
 							oneLine := make([]string, len(row.Cells))
+							if isAllCellEmpty(row.Cells) {
+								break
+							}
 							for i, cell := range row.Cells {
 								if i < keyNameLen {
 									key := keyNames[i]
@@ -170,7 +182,6 @@ func readOtherF(r *strings.Replacer, path, rootPath string) {
 							}
 							str = "{" + str + "}"
 							lines = append(lines, str)
-							//lines[line] = str
 						}
 						allFlieStr := strings.Join(lines, ",\n")
 						allFlieStr = r.Replace(allFlieStr)
@@ -182,7 +193,6 @@ func readOtherF(r *strings.Replacer, path, rootPath string) {
 							panic(err)
 						}
 					}
-
 				}
 			}
 		}
