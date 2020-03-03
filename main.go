@@ -63,7 +63,30 @@ func writeGo(rootPath string) {
 	}
 }
 
-func writeTs(path, rootPath string) {
+func writeCs(rootPath string) {
+	ckinglines := make([]string, 0)
+	for _, k := range keys {
+		v := enumNameMapValue[k]
+		t := enumNameMapType[k]
+		des := ";//" + enumNameMapDesc[k]
+		vstr := v
+		if t == "string" {
+			vstr = "\"" + v + "\""
+		}
+		ckstr := "\t\tpublic static " + t + " " + k + "= " + vstr + des
+		ckinglines = append(ckinglines, ckstr)
+	}
+
+	c_kingEqStr := strings.Join(ckinglines, "\n")
+	c_kingEqStr = "namespace game.data.autogen\n{\n\tstatic class EnumConst{\n" + c_kingEqStr + "\n}"
+
+	c_kingjsonPf := rootPath + "goenum/EnumConst.cs"
+	if err := ioutil.WriteFile(c_kingjsonPf, []byte(c_kingEqStr), 0644); err != nil {
+		panic(err)
+	}
+}
+
+func writeTs(rootPath string) {
 	ckinglines := make([]string, 0)
 	for _, k := range keys {
 		v := enumNameMapValue[k]
@@ -202,6 +225,7 @@ func main() {
 	rootPath := projPath + "/"
 	r := getEnumConstF(path, rootPath)
 	writeGo(rootPath)
-	writeTs(path, rootPath)
+	writeTs(rootPath)
+	writeCs(rootPath)
 	readOtherF(r, path, rootPath)
 }
