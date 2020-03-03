@@ -11,13 +11,14 @@ import (
 var enumNameMapValue map[string]string
 var enumNameMapType map[string]string
 var enumNameMapDesc map[string]string
+var keys []string
 var defalutInt = "0"
 var defalutStr = ""
 var defalutJson = "[]"
 
-func isAllCellEmpty([]xxx cells) {
-	for _,v := range(cells){
-		if len(v.String()) > 0{
+func isAllCellEmpty(cells []*xlsx.Cell) bool {
+	for _, v := range cells {
+		if len(v.String()) > 0 {
 			return false
 		}
 	}
@@ -37,13 +38,60 @@ func getValue(value, typeStr string) string {
 	return defalutJson
 }
 
+func writeGo(rootPath string) {
+	lines := make([]string, 0)
+	for _, k := range keys {
+		v := enumNameMapValue[k]
+		t := enumNameMapType[k]
+		des := "//" + enumNameMapDesc[k]
+		vstr := v
+		if t == "string" {
+			vstr = "\"" + v + "\""
+		}
+		str := k + " " + t + " = " + vstr + des
+		lines = append(lines, str)
+	}
+	allEqStr := strings.Join(lines, "\n")
+	allEqStr = `package enumErrCode
+	const (
+		` + allEqStr + `
+	)`
+
+	jsonPf := rootPath + "goenum/enumConst.go"
+	if err := ioutil.WriteFile(jsonPf, []byte(allEqStr), 0644); err != nil {
+		panic(err)
+	}
+}
+
+func writeTs(path, rootPath string) {
+	ckinglines := make([]string, 0)
+	for _, k := range keys {
+		v := enumNameMapValue[k]
+		t := enumNameMapType[k]
+		des := ";//" + enumNameMapDesc[k]
+		vstr := v
+		if t == "string" {
+			vstr = "\"" + v + "\""
+		}
+		ckstr := "public static " + k + "= " + vstr + des
+		ckinglines = append(ckinglines, ckstr)
+	}
+
+	c_kingEqStr := strings.Join(ckinglines, "\n")
+	c_kingEqStr = "class EnumConst{\n" + c_kingEqStr + "\n}"
+
+	c_kingjsonPf := rootPath + "goenum/kingEnumConst.ts"
+	if err := ioutil.WriteFile(c_kingjsonPf, []byte(c_kingEqStr), 0644); err != nil {
+		panic(err)
+	}
+}
+
 func getEnumConstF(path, rootPath string) *strings.Replacer {
 	fn := path + "enumConst.xlsx"
 	xlFile, err := xlsx.OpenFile(fn)
 	if err != nil {
 		panic(err)
 	}
-	var keys []string
 	for _, sheet := range xlFile.Sheets {
 		enumNameMapValue = make(map[string]string, 0)
 		enumNameMapType = make(map[string]string, 0)
@@ -59,62 +107,6 @@ func getEnumConstF(path, rootPath string) *strings.Replacer {
 			keys = append(keys, key)
 		}
 		break
-	}
-	lines := make([]string, 0)
-	//clines := make([]string, len(enumNameMapType))
-	ckinglines := make([]string, 0)
-	for _, k := range keys {
-		v := enumNameMapValue[k]
-		t := enumNameMapType[k]
-		des := ";//" + enumNameMapDesc[k]
-		vstr := v
-		if t == "string" {
-			vstr = "\"" + v + "\""
-		}
-		str := k + " " + t + " = " + vstr
-		//str := k + " = " + vstr
-		lines = append(lines, str)
-		//clines[i] = "\"" + k + "\" : " + vstr
-		//ckinglines[i] = "public static " + k + "= " + vstr + des
-		ckstr := "public static " + k + "= " + vstr + des
-		ckinglines = append(ckinglines, ckstr)
-
-		//public static TAR_IDX_SELF= 1
-		//"TAR_IDX_TEAMER_PLATFORM" : 2,
-
-	}
-	allEqStr := strings.Join(lines, "\n")
-	allEqStr = `package enumErrCode
-	const (
-		` + allEqStr + `
-	)`
-
-	jsonPf := rootPath + "goenum/enumConst.go"
-	if err := ioutil.WriteFile(jsonPf, []byte(allEqStr), 0644); err != nil {
-		panic(err)
-	}
-
-	c_kingEqStr := strings.Join(ckinglines, "\n")
-	c_kingEqStr = "class EnumConst{\n" + c_kingEqStr + "\n}"
-
-	//c_allEqStr := strings.Join(clines, ",\n")
-	//c_allEqStr = ` class EnumConst {
-	//public static ConstValue = {
-	//` + c_allEqStr + `
-	//}
-	//}`
-	c_kingjsonPf := rootPath + "goenum/kingEnumConst.ts"
-	if err := ioutil.WriteFile(c_kingjsonPf, []byte(c_kingEqStr), 0644); err != nil {
-		panic(err)
-	}
-	//c_jsonPf := rootPath + "goenum/enumConst.ts"
-	//if err := ioutil.WriteFile(c_jsonPf, []byte(c_allEqStr), 0644); err != nil {
-	//panic(err)
-	//}
-
-	c_jsonPf := rootPath + "goenum/enumConst.ts"
-	if err := ioutil.WriteFile(c_jsonPf, []byte(c_kingEqStr), 0644); err != nil {
-		panic(err)
 	}
 
 	replaceArr := []string{}
@@ -209,5 +201,7 @@ func main() {
 	path := projPath + "/excel/"
 	rootPath := projPath + "/"
 	r := getEnumConstF(path, rootPath)
+	writeGo(rootPath)
+	writeTs(path, rootPath)
 	readOtherF(r, path, rootPath)
 }
