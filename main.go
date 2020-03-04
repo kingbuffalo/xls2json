@@ -73,6 +73,15 @@ func writeCs(rootPath string) {
 		if t == "string" {
 			vstr = "\"" + v + "\""
 		}
+		if t == "int32" {
+			t = "int"
+		}
+		if t == "int64" {
+			t = "long"
+		}
+		if t == "float64" {
+			t = "double"
+		}
 		ckstr := "\t\tpublic static " + t + " " + k + "= " + vstr + des
 		ckinglines = append(ckinglines, ckstr)
 	}
@@ -174,7 +183,7 @@ func readOtherF(r *strings.Replacer, path, rootPath string) {
 						data := sheet.Rows[3:]
 						lines := make([]string, 0)
 						for _, row := range data {
-							oneLine := make([]string, len(row.Cells))
+							oneLine := make([]string, keyNameLen)
 							if isAllCellEmpty(row.Cells) {
 								break
 							}
