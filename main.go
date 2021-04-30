@@ -38,6 +38,31 @@ func getValue(value, typeStr string) string {
 	return defalutJson
 }
 
+func writeLua(rootPath string) {
+	lines := make([]string, 0)
+	for _, k := range keys {
+		v := enumNameMapValue[k]
+		t := enumNameMapType[k]
+		des := "--" + enumNameMapDesc[k]
+		vstr := v
+		if t == "string" {
+			vstr = "\"" + v + "\""
+		}
+		str := k + " = " + vstr + ","+ des
+		lines = append(lines, str)
+	}
+	allEqStr := strings.Join(lines, "\n")
+	allEqStr = `local M = {
+` + allEqStr + `
+}
+return M`
+
+	jsonPf := rootPath + "goenum/cfgEnumConst.lua"
+	if err := ioutil.WriteFile(jsonPf, []byte(allEqStr), 0644); err != nil {
+		panic(err)
+	}
+}
+
 func writeGo(rootPath string) {
 	lines := make([]string, 0)
 	for _, k := range keys {
@@ -198,6 +223,8 @@ func readOtherF(r *strings.Replacer, path, rootPath string) {
 									key = "\"" + key + "\""
 									cellStr := key + ":" + value
 									oneLine[i] = cellStr
+								}else{
+									break
 								}
 							}
 							str := strings.Join(oneLine, ",")
@@ -236,5 +263,6 @@ func main() {
 	writeGo(rootPath)
 	writeTs(rootPath)
 	writeCs(rootPath)
+	writeLua(rootPath)
 	readOtherF(r, path, rootPath)
 }
