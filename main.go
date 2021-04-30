@@ -194,19 +194,20 @@ func readOtherF(r *strings.Replacer, path, rootPath string) {
 					prefix := name[0:7]
 					if prefix == "output_" {
 						keyNames_orig := sheet.Rows[1].Cells
-						var keyNames = make([]string, 0)
+						var fldNames = make([]string, 0)
 						for _, v := range keyNames_orig {
 							vstr := v.String()
 							if len(vstr) > 0 {
-								keyNames = append(keyNames, vstr)
+								fldNames = append(fldNames, vstr)
 							} else {
 								break
 							}
 						}
-						keyNameLen := len(keyNames)
+						keyNameLen := len(fldNames)
 						types := sheet.Rows[2].Cells
 						data := sheet.Rows[3:]
 						lines := make([]string, 0)
+						var preLine []string = nil
 						for _, row := range data {
 							oneLine := make([]string, keyNameLen)
 							if isAllCellEmpty(row.Cells) {
@@ -214,20 +215,26 @@ func readOtherF(r *strings.Replacer, path, rootPath string) {
 							}
 							for i, cell := range row.Cells {
 								if i < keyNameLen {
-									key := keyNames[i]
+									key := fldNames[i]
 									ty := types[i].String()
-									value := getValue(cell.String(), ty)
-									if ty == "s" || ty == "string" {
-										value = "\"" + value + "\""
+									cellStr := cell.String()
+									if len(cellStr) == 0{
+										oneLine[i] = preLine[i]
+									}else{
+										value := getValue(cellStr, ty)
+										if ty == "s" || ty == "string" {
+											value = "\"" + value + "\""
+										}
+										key = "\"" + key + "\""
+										cellStr := key + ":" + value
+										oneLine[i] = cellStr
 									}
-									key = "\"" + key + "\""
-									cellStr := key + ":" + value
-									oneLine[i] = cellStr
 								}else{
 									break
 								}
 							}
 							str := strings.Join(oneLine, ",")
+							preLine = oneLine[:]
 							if len(str) == 0 {
 								break
 							}
@@ -239,8 +246,13 @@ func readOtherF(r *strings.Replacer, path, rootPath string) {
 						allFlieStr = "[" + allFlieStr + "]"
 						jsonFn := sheet.Name[7:]
 						jsonPf := rootPath + "json/" + jsonFn + ".json"
+						jsonKeyPf := rootPath + "json/" + jsonFn + "_key.json"
+						keyFileStr := "[\"" +strings.Join(fldNames,"\",\"") + "\"]"
 						fmt.Println(jsonPf)
 						if err := ioutil.WriteFile(jsonPf, []byte(allFlieStr), 0644); err != nil {
+							panic(err)
+						}
+						if err := ioutil.WriteFile(jsonKeyPf, []byte(keyFileStr), 0644); err != nil {
 							panic(err)
 						}
 					}
