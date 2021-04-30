@@ -234,6 +234,7 @@ func readOtherF(r *strings.Replacer, path, rootPath string) {
 								}
 							}
 							str := strings.Join(oneLine, ",")
+							//fmt.Println("str",str)
 							preLine = oneLine[:]
 							if len(str) == 0 {
 								break

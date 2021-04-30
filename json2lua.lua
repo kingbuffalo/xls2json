@@ -25,7 +25,8 @@ local function main()
 		for i=1,#t-1 do
 			local v = t[i]
 			local nv = t[i+1]
-			if v[fldt[lv]] == nv[fldt[lv]] then
+			local keyName = fldt[lv]
+			if v[keyName] == nv[keyName] then
 				bHasEqual = true
 				break
 			end
@@ -38,15 +39,10 @@ local function main()
 	local nt = {}
 	for _,v in ipairs(t) do
 		local levelt = nt
-		for i=1,level-1 do
-			local fldName = fldt[i]
-			local key = v[fldName]
-			local prevlevelt = levelt
-			levelt = levelt[key]
-			if levelt == nil then
-				levelt = {}
-				prevlevelt[key] = levelt
-			end
+		for ll=1,level-1 do
+			local k1t = levelt[v[fldt[ll]]] or {}
+			levelt[v[fldt[ll]]] = k1t
+			levelt = k1t
 		end
 		levelt[v[fldt[level]]] = v
 	end
