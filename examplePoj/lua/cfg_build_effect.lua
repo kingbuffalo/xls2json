@@ -1,1 +1,1 @@
-do local _={[2]={level=1,id=2,effects={{10,100},{11,100}}}};return _;end
+do local _={[2]={level=1,effects={{10,100},{11,100}},id=2}};return _;end

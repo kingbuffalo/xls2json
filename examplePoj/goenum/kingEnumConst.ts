@@ -73,4 +73,16 @@ public static ITEM_ID_STONE= 1004;//石材
 public static ITEM_ID_COIN= 1005;//游戏币
 public static ITEM_ID_GOLD= 1006;//RMB
 public static ITEM_ID_FAME= 1007;//名望
+public static LOC_WOOD= 1001;//木材
+public static LOC_FOOD= 1002;//食物
+public static LOC_IRON= 1003;//铁矿
+public static LOC_STONE= 1004;//石材
+public static LOC_COIN= 1005;//游戏币
+public static LOC_GOLD= 1006;//RMB
+public static LOC_FAME= 1007;//名望
+public static LOC_RES_BEGIN= 1001;//名望
+public static LOC_RES_END= 1007;//名望
+public static LOC_GIFT= 2001;//走cfg_gift
+public static LOC_LOTTERY= 2002;//走cfg_lottery
+public static LOC_HERO_LIST= 2003;//英雄列表
 }

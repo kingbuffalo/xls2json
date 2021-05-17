@@ -74,4 +74,16 @@ ITEM_ID_STONE int = 1004//石材
 ITEM_ID_COIN int = 1005//游戏币
 ITEM_ID_GOLD int = 1006//RMB
 ITEM_ID_FAME int = 1007//名望
+LOC_WOOD int = 1001//木材
+LOC_FOOD int = 1002//食物
+LOC_IRON int = 1003//铁矿
+LOC_STONE int = 1004//石材
+LOC_COIN int = 1005//游戏币
+LOC_GOLD int = 1006//RMB
+LOC_FAME int = 1007//名望
+LOC_RES_BEGIN int = 1001//名望
+LOC_RES_END int = 1007//名望
+LOC_GIFT int = 2001//走cfg_gift
+LOC_LOTTERY int = 2002//走cfg_lottery
+LOC_HERO_LIST int = 2003//英雄列表
 	)
