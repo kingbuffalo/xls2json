@@ -54,4 +54,13 @@ local function main()
 	f:close()
 end
 
-main()
+local function f(...)
+	print("------------------")
+	print(arg[1])
+	print(arg[2])
+	print(arg[3])
+	print("------------------")
+	print(debug.traceback())
+end
+
+xpcall(main,f)
