@@ -48,7 +48,7 @@ func writeLua(rootPath string) {
 		if t == "string" {
 			vstr = "\"" + v + "\""
 		}
-		str := k + " = " + vstr + ","+ des
+		str := k + " = " + vstr + "," + des
 		lines = append(lines, str)
 	}
 	allEqStr := strings.Join(lines, "\n")
@@ -157,11 +157,15 @@ func getEnumConstF(path, rootPath string) *strings.Replacer {
 		d := sheet.Rows[1:]
 		keys = make([]string, 0)
 		for _, row := range d {
-			key := row.Cells[0].String()
-			enumNameMapValue[key] = row.Cells[2].String()
-			enumNameMapType[key] = row.Cells[1].String()
-			enumNameMapDesc[key] = row.Cells[3].String()
-			keys = append(keys, key)
+			if len(row.Cells) > 0 {
+				key := row.Cells[0].String()
+				enumNameMapValue[key] = row.Cells[2].String()
+				enumNameMapType[key] = row.Cells[1].String()
+				enumNameMapDesc[key] = row.Cells[3].String()
+				keys = append(keys, key)
+			} else {
+				break
+			}
 		}
 		break
 	}
@@ -218,9 +222,9 @@ func readOtherF(r *strings.Replacer, path, rootPath string) {
 									key := fldNames[i]
 									ty := types[i].String()
 									cellStr := cell.String()
-									if len(cellStr) == 0{
+									if len(cellStr) == 0 {
 										oneLine[i] = preLine[i]
-									}else{
+									} else {
 										value := getValue(cellStr, ty)
 										if ty == "s" || ty == "string" {
 											value = "\"" + value + "\""
@@ -229,7 +233,7 @@ func readOtherF(r *strings.Replacer, path, rootPath string) {
 										cellStr := key + ":" + value
 										oneLine[i] = cellStr
 									}
-								}else{
+								} else {
 									break
 								}
 							}
@@ -248,7 +252,7 @@ func readOtherF(r *strings.Replacer, path, rootPath string) {
 						jsonFn := sheet.Name[7:]
 						jsonPf := rootPath + "json/" + jsonFn + ".json"
 						jsonKeyPf := rootPath + "json/" + jsonFn + "_key.json"
-						keyFileStr := "[\"" +strings.Join(fldNames,"\",\"") + "\"]"
+						keyFileStr := "[\"" + strings.Join(fldNames, "\",\"") + "\"]"
 						fmt.Println(jsonPf)
 						if err := ioutil.WriteFile(jsonPf, []byte(allFlieStr), 0644); err != nil {
 							panic(err)
