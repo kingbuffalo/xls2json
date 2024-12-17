@@ -65,7 +65,19 @@ func readOtherF(r *strings.Replacer, path, rootPath string) {
 						}
 						keyNameLen := len(fldNames)
 						types := sheet.Rows[2].Cells
-						data := sheet.Rows[3:]
+						checkCells := sheet.Rows[3].Cells
+						checkMap := make(map[string]string)
+						for i, v := range checkCells {
+							vstr := v.String()
+							if len(vstr) > 0 {
+								checkMap[fldNames[i]] = vstr
+							}
+						}
+						checkStr := ""
+						for k, v := range checkMap {
+							checkStr += "\"" + k + "\":\"" + v + "\","
+						}
+						data := sheet.Rows[4:]
 						lines := make([]string, 0)
 						var preLine []string = nil
 						for _, row := range data {
@@ -107,15 +119,18 @@ func readOtherF(r *strings.Replacer, path, rootPath string) {
 						allFlieStr = "[" + allFlieStr + "]"
 						jsonFn := sheet.Name[7:]
 						jsonPf := rootPath + "json/" + jsonFn + ".json"
-						//jsonKeyPf := rootPath + "json/" + jsonFn + "_key.json"
-						//keyFileStr := "[\"" + strings.Join(fldNames, "\",\"") + "\"]"
 						fmt.Println(jsonPf)
 						if err := os.WriteFile(jsonPf, []byte(allFlieStr), 0644); err != nil {
 							panic(err)
 						}
-						// if err := os.WriteFile(jsonKeyPf, []byte(keyFileStr), 0644); err != nil {
-						// 	panic(err)
-						// }
+
+						if len(checkStr) > 0 {
+							checkPf := rootPath + "json/" + jsonFn + "_check.json"
+							checkPFStr := "{" + checkStr + "}"
+							if err := os.WriteFile(checkPf, []byte(checkPFStr), 0644); err != nil {
+								panic(err)
+							}
+						}
 					}
 				}
 			}
