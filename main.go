@@ -2,10 +2,10 @@ package main
 
 import (
 	"fmt"
-	"github.com/tealeg/xlsx"
-	"io/ioutil"
 	"os"
 	"strings"
+
+	"github.com/tealeg/xlsx"
 )
 
 var enumNameMapValue map[string]string
@@ -58,7 +58,7 @@ func writeLua(rootPath string) {
 return M`
 
 	jsonPf := rootPath + "goenum/cfgEnumConst.lua"
-	if err := ioutil.WriteFile(jsonPf, []byte(allEqStr), 0644); err != nil {
+	if err := os.WriteFile(jsonPf, []byte(allEqStr), 0644); err != nil {
 		panic(err)
 	}
 }
@@ -83,7 +83,7 @@ func writeGo(rootPath string) {
 	)`
 
 	jsonPf := rootPath + "goenum/enumConst.go"
-	if err := ioutil.WriteFile(jsonPf, []byte(allEqStr), 0644); err != nil {
+	if err := os.WriteFile(jsonPf, []byte(allEqStr), 0644); err != nil {
 		panic(err)
 	}
 }
@@ -115,7 +115,7 @@ func writeCs(rootPath string) {
 	c_kingEqStr = "namespace game.data.autogen\n{\n\tstatic class EnumConst{\n" + c_kingEqStr + "\n}"
 
 	c_kingjsonPf := rootPath + "goenum/EnumConst.cs"
-	if err := ioutil.WriteFile(c_kingjsonPf, []byte(c_kingEqStr), 0644); err != nil {
+	if err := os.WriteFile(c_kingjsonPf, []byte(c_kingEqStr), 0644); err != nil {
 		panic(err)
 	}
 }
@@ -138,12 +138,12 @@ func writeTs(rootPath string) {
 	c_kingEqStr = "class EnumConst{\n" + c_kingEqStr + "\n}"
 
 	c_kingjsonPf := rootPath + "goenum/kingEnumConst.ts"
-	if err := ioutil.WriteFile(c_kingjsonPf, []byte(c_kingEqStr), 0644); err != nil {
+	if err := os.WriteFile(c_kingjsonPf, []byte(c_kingEqStr), 0644); err != nil {
 		panic(err)
 	}
 }
 
-func getEnumConstF(path, rootPath string) *strings.Replacer {
+func getEnumConstF(path string) *strings.Replacer {
 	fn := path + "enumConst.xlsx"
 	xlFile, err := xlsx.OpenFile(fn)
 	if err != nil {
@@ -180,7 +180,7 @@ func getEnumConstF(path, rootPath string) *strings.Replacer {
 }
 
 func readOtherF(r *strings.Replacer, path, rootPath string) {
-	files, err := ioutil.ReadDir(path)
+	files, err := os.ReadDir(path)
 	if err != nil {
 		panic(err)
 	}
@@ -254,10 +254,10 @@ func readOtherF(r *strings.Replacer, path, rootPath string) {
 						jsonKeyPf := rootPath + "json/" + jsonFn + "_key.json"
 						keyFileStr := "[\"" + strings.Join(fldNames, "\",\"") + "\"]"
 						fmt.Println(jsonPf)
-						if err := ioutil.WriteFile(jsonPf, []byte(allFlieStr), 0644); err != nil {
+						if err := os.WriteFile(jsonPf, []byte(allFlieStr), 0644); err != nil {
 							panic(err)
 						}
-						if err := ioutil.WriteFile(jsonKeyPf, []byte(keyFileStr), 0644); err != nil {
+						if err := os.WriteFile(jsonKeyPf, []byte(keyFileStr), 0644); err != nil {
 							panic(err)
 						}
 					}
@@ -276,7 +276,7 @@ func main() {
 	projPath := os.Args[1]
 	path := projPath + "/excel/"
 	rootPath := projPath + "/"
-	r := getEnumConstF(path, rootPath)
+	r := getEnumConstF(path)
 	writeGo(rootPath)
 	writeTs(rootPath)
 	writeCs(rootPath)
