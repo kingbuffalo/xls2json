@@ -36,7 +36,7 @@ namespace game.data.autogen
 		public static int BUILD_ID_END= 31;//建筑id结尾 包含
 		public static int BUILD_EFF_ID_CITY_BLEED_MAX= 1;//城池耐久度
 		public static int BUILD_EFF_ID_ARMY_CST= 2;//部队cst
-		public static int BUILD_EFF_ID_ARMY_CNT= 3;//部队的数量
+		public static int BUILD_EFF_ID_ARMY_CST_CNT= 3;//部队的数量
 		public static int BUILD_EFF_ID_HERO_ENG_MAX= 4;//武将的活力上限
 		public static int BUILD_EFF_ID_TAX= 5;//税收
 		public static int BUILD_EFF_ID_ARMY_SPEED_ADD= 6;//本城部队的加速
@@ -81,13 +81,12 @@ namespace game.data.autogen
 		public static int LOC_STONE= 1004;//石材
 		public static int LOC_COIN= 1005;//游戏币
 		public static int LOC_GOLD= 1006;//RMB
-		public static int LOC_HERO_LIST= 2003;//英雄列表
+		public static int LOC_HERO_LIST= 1007;//武将列表
 		public static int LOC_FAME= 1008;//名望
 		public static int LOC_RES_BEGIN= 1001;//名望
 		public static int LOC_RES_END= 1008;//名望
 		public static int LOC_GIFT= 2001;//走cfg_gift
 		public static int LOC_LOTTERY= 2002;//走cfg_lottery
-		public static int LOC_HERO_LIST= 2003;//英雄列表
 		public static int FIELD_TYPE_EDGE= 1;//边界
 		public static int FIELD_TYPE_HILL= 2;//山
 		public static int FIELD_TYPE_RIVAL= 3;//河
@@ -172,4 +171,5 @@ namespace game.data.autogen
 		public static int HERO_RECRUIT_SPEC_TIMES= 10;//逢10会有特殊抽奖
 		public static int HERO_RECRUIT_TENTH_POOL_ID= 3;//逢10会有特殊抽奖
 		public static int HERO_RECRUIT_SPEC_STAR= 5;//抽到5星卡会有次数累计的变化
+		public static int CALC_ATR_ARROW= 1;//测试
 }

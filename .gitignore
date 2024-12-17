@@ -1,3 +1,5 @@
 main
 httpserver
 *.json
+*.lua
+*.exe

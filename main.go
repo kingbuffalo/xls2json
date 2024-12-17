@@ -4,14 +4,11 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"xls2json/util"
 
 	"github.com/tealeg/xlsx"
 )
 
-var enumNameMapValue map[string]string
-var enumNameMapType map[string]string
-var enumNameMapDesc map[string]string
-var keys []string
 var defalutInt = "0"
 var defalutStr = ""
 var defalutJson = "[]"
@@ -36,147 +33,6 @@ func getValue(value, typeStr string) string {
 		return defalutInt
 	}
 	return defalutJson
-}
-
-func writeLua(rootPath string) {
-	lines := make([]string, 0)
-	for _, k := range keys {
-		v := enumNameMapValue[k]
-		t := enumNameMapType[k]
-		des := "--" + enumNameMapDesc[k]
-		vstr := v
-		if t == "string" {
-			vstr = "\"" + v + "\""
-		}
-		str := k + " = " + vstr + "," + des
-		lines = append(lines, str)
-	}
-	allEqStr := strings.Join(lines, "\n")
-	allEqStr = `local M = {
-` + allEqStr + `
-}
-return M`
-
-	jsonPf := rootPath + "goenum/cfgEnumConst.lua"
-	if err := os.WriteFile(jsonPf, []byte(allEqStr), 0644); err != nil {
-		panic(err)
-	}
-}
-
-func writeGo(rootPath string) {
-	lines := make([]string, 0)
-	for _, k := range keys {
-		v := enumNameMapValue[k]
-		t := enumNameMapType[k]
-		des := "//" + enumNameMapDesc[k]
-		vstr := v
-		if t == "string" {
-			vstr = "\"" + v + "\""
-		}
-		str := k + " " + t + " = " + vstr + des
-		lines = append(lines, str)
-	}
-	allEqStr := strings.Join(lines, "\n")
-	allEqStr = `package enumErrCode
-	const (
-		` + allEqStr + `
-	)`
-
-	jsonPf := rootPath + "goenum/enumConst.go"
-	if err := os.WriteFile(jsonPf, []byte(allEqStr), 0644); err != nil {
-		panic(err)
-	}
-}
-
-func writeCs(rootPath string) {
-	ckinglines := make([]string, 0)
-	for _, k := range keys {
-		v := enumNameMapValue[k]
-		t := enumNameMapType[k]
-		des := ";//" + enumNameMapDesc[k]
-		vstr := v
-		if t == "string" {
-			vstr = "\"" + v + "\""
-		}
-		if t == "int32" {
-			t = "int"
-		}
-		if t == "int64" {
-			t = "long"
-		}
-		if t == "float64" {
-			t = "double"
-		}
-		ckstr := "\t\tpublic static " + t + " " + k + "= " + vstr + des
-		ckinglines = append(ckinglines, ckstr)
-	}
-
-	c_kingEqStr := strings.Join(ckinglines, "\n")
-	c_kingEqStr = "namespace game.data.autogen\n{\n\tstatic class EnumConst{\n" + c_kingEqStr + "\n}"
-
-	c_kingjsonPf := rootPath + "goenum/EnumConst.cs"
-	if err := os.WriteFile(c_kingjsonPf, []byte(c_kingEqStr), 0644); err != nil {
-		panic(err)
-	}
-}
-
-func writeTs(rootPath string) {
-	ckinglines := make([]string, 0)
-	for _, k := range keys {
-		v := enumNameMapValue[k]
-		t := enumNameMapType[k]
-		des := ";//" + enumNameMapDesc[k]
-		vstr := v
-		if t == "string" {
-			vstr = "\"" + v + "\""
-		}
-		ckstr := "public static " + k + "= " + vstr + des
-		ckinglines = append(ckinglines, ckstr)
-	}
-
-	c_kingEqStr := strings.Join(ckinglines, "\n")
-	c_kingEqStr = "class EnumConst{\n" + c_kingEqStr + "\n}"
-
-	c_kingjsonPf := rootPath + "goenum/kingEnumConst.ts"
-	if err := os.WriteFile(c_kingjsonPf, []byte(c_kingEqStr), 0644); err != nil {
-		panic(err)
-	}
-}
-
-func getEnumConstF(path string) *strings.Replacer {
-	fn := path + "enumConst.xlsx"
-	xlFile, err := xlsx.OpenFile(fn)
-	if err != nil {
-		panic(err)
-	}
-	for _, sheet := range xlFile.Sheets {
-		enumNameMapValue = make(map[string]string, 0)
-		enumNameMapType = make(map[string]string, 0)
-		enumNameMapDesc = make(map[string]string, 0)
-
-		d := sheet.Rows[1:]
-		keys = make([]string, 0)
-		for _, row := range d {
-			if len(row.Cells) > 0 {
-				key := row.Cells[0].String()
-				enumNameMapValue[key] = row.Cells[2].String()
-				enumNameMapType[key] = row.Cells[1].String()
-				enumNameMapDesc[key] = row.Cells[3].String()
-				keys = append(keys, key)
-			} else {
-				break
-			}
-		}
-		break
-	}
-
-	replaceArr := []string{}
-	for k, v := range enumNameMapValue {
-		replaceArr = append(replaceArr, k)
-		replaceArr = append(replaceArr, v)
-	}
-	ret := strings.NewReplacer(replaceArr...)
-	return ret
 }
 
 func readOtherF(r *strings.Replacer, path, rootPath string) {
@@ -251,15 +107,15 @@ func readOtherF(r *strings.Replacer, path, rootPath string) {
 						allFlieStr = "[" + allFlieStr + "]"
 						jsonFn := sheet.Name[7:]
 						jsonPf := rootPath + "json/" + jsonFn + ".json"
-						jsonKeyPf := rootPath + "json/" + jsonFn + "_key.json"
-						keyFileStr := "[\"" + strings.Join(fldNames, "\",\"") + "\"]"
+						//jsonKeyPf := rootPath + "json/" + jsonFn + "_key.json"
+						//keyFileStr := "[\"" + strings.Join(fldNames, "\",\"") + "\"]"
 						fmt.Println(jsonPf)
 						if err := os.WriteFile(jsonPf, []byte(allFlieStr), 0644); err != nil {
 							panic(err)
 						}
-						if err := os.WriteFile(jsonKeyPf, []byte(keyFileStr), 0644); err != nil {
-							panic(err)
-						}
+						// if err := os.WriteFile(jsonKeyPf, []byte(keyFileStr), 0644); err != nil {
+						// 	panic(err)
+						// }
 					}
 				}
 			}
@@ -276,10 +132,10 @@ func main() {
 	projPath := os.Args[1]
 	path := projPath + "/excel/"
 	rootPath := projPath + "/"
-	r := getEnumConstF(path)
-	writeGo(rootPath)
-	writeTs(rootPath)
-	writeCs(rootPath)
-	writeLua(rootPath)
+	r := util.GetEnumConstF(path)
+	util.WriteGo(rootPath)
+	util.WriteTs(rootPath)
+	util.WriteCs(rootPath)
+	util.WriteLua(rootPath)
 	readOtherF(r, path, rootPath)
 }
